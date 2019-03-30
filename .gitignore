@@ -1,5 +1,1 @@
-*.swp
-*.o
-*.a
-busexmp
-loopback
+build

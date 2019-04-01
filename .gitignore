@@ -1,1 +1,2 @@
-build
+target
+cmake-build-debug

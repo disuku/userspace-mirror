@@ -5,12 +5,16 @@ use std::ffi::{CString, c_void};
 use std::slice;
 
 extern "C" {
-	fn buse_main_shim(device: *const u8, size: uint64_t,
+	fn buse_main_shim(device: *const u8,
+					  block_size: uint32_t,
+					  block_count: uint64_t,
 					  read: unsafe extern "C" fn(*mut u8, uint32_t, uint64_t, *const c_void) -> c_int, read_ctx: *const c_void,
 					  write: unsafe extern "C" fn(*const u8, uint32_t, uint64_t, *const c_void) -> c_int, write_ctx: *const c_void) -> c_int;
 }
 
-pub fn main<R, W>(device: String, size: u64,
+pub fn main<R, W>(device: String,
+				  block_size: u32,
+				  block_count: u64,
 				  read: R,
 				  write: W) -> Result<(), ()>
 	where R: Fn(&mut [u8], u64) -> Result<(), ()>,
@@ -29,7 +33,9 @@ pub fn main<R, W>(device: String, size: u64,
 	}
 	
 	match unsafe {
-		buse_main_shim(CString::new(device).expect("failed").as_ptr() as *const u8, size,
+		buse_main_shim(CString::new(device).expect("failed").as_ptr() as *const u8,
+					   block_size,
+					   block_count,
 					   read_wrapper::<R>, &read as *const R as *const c_void,
 					   write_wrapper::<W>, &write as *const W as *const c_void)
 	} {

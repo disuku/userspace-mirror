@@ -46,7 +46,8 @@ static int xmp_trim(u_int64_t from, u_int32_t len, void *userdata) {
     return 0;
 }
 
-int buse_main_shim(const char *device, u_int64_t size,
+int buse_main_shim(const char *device,
+                   u_int32_t block_size, u_int64_t block_count,
                    int (*read)(void *, u_int32_t, u_int64_t, void *), void *read_ctx,
                    int (*write)(const void *, u_int32_t, u_int64_t, void *), void *write_ctx) {
     _read = read;
@@ -60,7 +61,8 @@ int buse_main_shim(const char *device, u_int64_t size,
             .disc = xmp_disc,
             .flush = xmp_flush,
             .trim = xmp_trim,
-            .size = size,
+            .blksize = block_size,
+            .size_blocks = block_count
     };
 
     return buse_main(device, &aop, NULL);
